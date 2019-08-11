@@ -1,0 +1,22 @@
+{
+  "name": "@websh/factory",
+  "version": "0.1.0",
+  "description": "Object factory with multiple inheritance",
+  "module": "factory.mjs",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/websh-org/factory.git"
+  },
+  "keywords": [
+    "websh",
+    "webshell",
+    "factory"
+  ],
+  "author": "Zoran Obradović, Ljudmila.org",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/websh-org/factory/issues"
+  },
+  "homepage": "https://websh.org/packages/factory/"
+}
