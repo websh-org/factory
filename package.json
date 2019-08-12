@@ -2,8 +2,11 @@
   "name": "@websh/factory",
   "version": "0.1.0",
   "description": "Object factory with multiple inheritance",
+  "main": "factory.mjs",
   "module": "factory.mjs",
-  "scripts": {},
+  "scripts": {
+    "test" : "node --experimental-modules test/index.mjs"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/websh-org/factory.git"

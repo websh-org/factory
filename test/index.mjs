@@ -1,29 +1,16 @@
-import { register, create, assert } from "./factory";
+import { register, create, test } from "../factory.mjs";
 
-/**
- * A simple test function
- */
-function test(label, value, cond = value) {
-  var text = label + ": " + JSON.stringify(value);
-  if (cond === value) return console.log(`\x1b[42m[PASS]\x1b[0m \x1b[92m${text}\x1b[0m`)
-  text = label + ": " + JSON.stringify(value) + " (" + JSON.stringify(cond) + ")";
-  console.error(`\x1b[41m[FAIL]\x1b[0m \x1b[41m${text}\x1b[0m`)
-}
 /**
  * Registering a component type
  */
 register('hello', {
   private: {
     greeting: "Hello",
-    output(message) {
-      console.log(message);
-      return message;
-    },
   },
   public: {
     name: "world",
     greet() {
-      return this.output(`${this.greeting}, ${this.public.name}!`);
+      return `${this.greeting}, ${this.public.name}!`;
     }
   },
   init({ name = this.public.name }) {
@@ -34,6 +21,8 @@ register('hello', {
 /**
  * Creating a component
  */
+
+test("Basic")
 
 const world = create("hello", {})
 test("hello.greeting is private", !("greeting" in world));
@@ -52,6 +41,10 @@ test("The new greeting is", "Hello, Uncle!", aunty.greet())
  */
 
 // override a member
+
+test("Inheritance")
+
+
 register("hi", {
   extends: "hello",
   private: {
@@ -66,7 +59,7 @@ register("ask", {
   extends: "hello",
   public: {
     ask(question) {
-      return this.output(`Hey ${this.public.name}, ${question}?`);
+      return `Hey ${this.public.name}, ${question}?`;
     }
   }
 })
@@ -95,6 +88,7 @@ test(
 /**
  * Multiple inheritance
  */
+test("Multiple inheritance")
 
 // Creating components with multiple types
 const mister = create("greeting ask", {
@@ -116,7 +110,7 @@ register("person", {
   extends: "greeting ask",
   public: {
     warn(about) {
-      return this.output(`Watch out for ${about}, ${this.public.name}!`);
+      return `Watch out for ${about}, ${this.public.name}!`;
     }
   },
 });
@@ -154,6 +148,7 @@ test("The warning is", "Watch out for monsters, dear Father!", father.warn("mons
 /**
  * Extending the factory with custom builders
  */
+test ("Custom builders");
 
 register("methods", {
   build: {
@@ -213,3 +208,5 @@ test(
   "Captain Darling! I was just cleaning my gun, sir!",
   captain.excuse("cleaning my gun")
 )
+
+test();
