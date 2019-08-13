@@ -9,9 +9,16 @@ cd $ROOT;
 PACKAGE=$(json_get $ROOT/real.package.json name) 
 echo Bulding package $(tput bold)$PACKAGE$(tput sgr0)
 
-ensure_git_clean;
-success "Working directory clean."
-success "Building in $(tput bold)$DIST$(tput sgr0)"
+ok() {
+  echo $(tput setaf 2; tput bold)✔
+}
+
+fail() {
+  echo $(tput setaf 1; tput bold) ✘
+}
+
+echo -n '* Is the working directory clean?'
+is_git_clean && ok || fail && fatal Working directory must be clean;
 
 ## prepare the dist directory
 rm -rf $DIST
