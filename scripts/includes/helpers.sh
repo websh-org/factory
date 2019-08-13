@@ -13,11 +13,31 @@ success() {
 }
 
 fatal() {
-  local style="$(tput setaf 1)$(tput rev)$(tput bold)"
+  local style="$(tput setaf 1;tput rev;tput bold)"
   local reset=$(tput sgr0)
   echo "${style} FATAL ${reset} $*"
   echo "Exiting."
   exit 1
+}
+
+abort() {
+  fail;
+  fatal "$*"
+}
+
+
+ok() {
+  echo $(tput setaf 2; tput bold) ✔
+  return 0
+}
+
+fail() {
+  echo $(tput setaf 1; tput bold) ✘
+  return 0
+}
+
+announce() {
+  echo -n " • $*";
 }
 
 parent_of_script() {
