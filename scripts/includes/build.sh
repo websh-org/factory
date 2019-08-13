@@ -21,4 +21,4 @@ cp $ROOT/real.package.json $DIST/package.json
 
 build_package;
 success "Package built in $DIST"
-echo "$(tput bold)All done.$(tput reset)"
+echo "$(tput bold)All done.$(tput sgr0)"
