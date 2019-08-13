@@ -14,9 +14,12 @@
 
 
 build_package () {
+  { 
+    
+    announce "Copying files to dist"
+    cp -a $ROOT/src/* $DIST 
 
-  cp -a $ROOT/src/* $DIST
-
+  } && { ok  } || { fail; fatal }
 }
 
 # ---------------------------------------------
