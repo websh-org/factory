@@ -2,36 +2,42 @@
 . "$(dirname "$0")/includes/helpers.sh"
 
 ROOT=$(parent_of_script)
-DIST=$ROOT/dist
+BUILD=$ROOT/build
 
 cd $ROOT;
 
-PACKAGE_JSON=$ROOT/dist.package.json
+PACKAGE_JSON=$ROOT/src/package.json
 PACKAGE=$(json_get $PACKAGE_JSON name)
 echo
 heading "Bulding package $PACKAGE"
 
-announce "Is the working directory clean?"
-is_git_clean && ok || abort "Working directory must be clean.";
+# announce "Is the working directory clean?"
+# is_git_clean && ok || abort "Working directory must be clean.";
 
-announce "Preparing the dist directory in $DIST"
+announce "Preparing the build directory in $BUILD"
 {
-  rm -rf $DIST;
-  mkdir $DIST;
+  rm -rf $BUILD;
+  mkdir $BUILD;
 } && ok || abort;
 
-announce "Copy dist.package.json to dist/package.json"
-cp $PACKAGE_JSON $DIST/package.json && ok || abort
 
 announce "Copy README.md"
-cp $ROOT/README.md $DIST && ok || abort
+cp $ROOT/README.md $BUILD && ok || abort
 
 announce "Copy LICENSE.md"
-cp $ROOT/LICENSE.md $DIST && ok || abort
+cp $ROOT/LICENSE.md $BUILD && ok || abort
 
-# Build this particular package in the dist directory
+# Build this particular package in the build directory
 ## Customize as necessary.
 
 build_package;
-success "$PACKAGE built in $DIST"
+
+announce "Copy src/package.json to build/package.json"
+cp $PACKAGE_JSON $BUILD/package.json && ok || abort
+
+announce "Delete file"
+cp $ROOT/LICENSE.md $BUILD && ok || abort
+
+
+success "$PACKAGE built in $BUILD"
 success "$(tput bold)All done.$(tput sgr0)"

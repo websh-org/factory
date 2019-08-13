@@ -1,13 +1,13 @@
 #/bin/sh
 
-# Build this particular package in the dist directory
+# Build this particular package in the build directory
 ## Customize as necessary.
 
 ## When this function is invoked:
 ### $ROOT is the root directory of the repo
-### $DIST is the dist directory where the package should be built
-### README and LICENSE are already copied from $ROOT to $DIST
-### $ROOT/real.package.json is already copied to $DIST/package.json
+### $BUILD is the build directory where the package should be built
+### README and LICENSE are already copied from $ROOT to $BUILD
+### $ROOT/real.package.json is already copied to $BUILD/package.json
 
 ### use success and error instead of echo to output any messages
 ### use fatal to display a fatal error and abort 
@@ -15,8 +15,8 @@
 
 build_package () {
   { 
-    announce "Copying files to dist";
-    cp -a $ROOT/src/* $DIST;
+    announce "Copying files to build";
+    cp -a $ROOT/src/* $BUILD;
   } && {  ok;  } || { fail; fatal; }
 }
 

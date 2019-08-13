@@ -1,11 +1,9 @@
 node_modules/
 .DS_Store
-package-lock.json
 coverage
 .nyc_output
 .cache
 dist
-lib
 .vscode/
 .idea/
 *.min.js
