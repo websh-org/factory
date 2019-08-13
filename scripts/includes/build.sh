@@ -20,7 +20,7 @@ fail() {
 }
 
 echo -n '* Is the working directory clean?'
-is_git_clean && ok || fail && fatal "Working directory must be clean";
+is_git_clean && ok || fail; fatal "Working directory must be clean";
 
 ## prepare the dist directory
 rm -rf $DIST
