@@ -2,59 +2,24 @@
 
 # Build this particular package in the dist directory
 ## Customize as necessary.
-## $ROOT is the root directory of the repo
-## $DIST is the dist direcetory where the package should be built
+
+## When this function is invoked:
+### $ROOT is the root directory of the repo
+### $DIST is the dist directory where the package should be built
+### README and LICENSE are already copied from $ROOT to $DIST
+### $ROOT/real.package.json is already copied to $DIST/package.json
+
+### use success and error instead of echo to output any messages
+### use fatal to display a fatal error and abort 
+
 
 build_package () {
+
   cp -a $ROOT/src/* $DIST
-  success "Done."
+
 }
 
-# Generalia
-## This section should be probably left alone.
+# ---------------------------------------------
+# Everything under this line should probably be left alone.
 
-error() {
-  local red=`tput setaf 1`
-  local bold=`tput bold`
-  local reset=`tput sgr0`
-  echo -e "${red}${bold}ERROR${reset} $*"
-}
-
-success() {
-  local style="$(tput setaf 2)$(tput bold)"
-  local reset=$(tput sgr0)
-  echo "${style} OK ${reset} $*"
-}
-
-fatal() {
-  local style="$(tput setaf 1)$(tput rev)$(tput bold)"
-  local reset=$(tput sgr0)
-  echo "${style} FATAL ${reset} $*"
-  echo "Exiting."
-  exit 1
-}
-
-
-
-ROOT=$(readlink -f $(dirname $0)/..)
-DIST=$ROOT/dist
-
-cd $ROOT;
-git diff-index --quiet HEAD || fatal "You have uncommitted changes.";
-
-## prepare the dist directory
-echo Building in $DIST
-
-rm -rf $DIST
-mkdir $DIST
-cp $ROOT/README.md $DIST
-cp $ROOT/LICENSE.md $DIST
-cp $ROOT/real.package.json $DIST/package.json
-
-
-# Build this particular package in the dist directory
-## Customize as necessary.
-
-build_package;
-success "Package built in $DIST"
-success "All done."
+. "$(dirname "$0")/includes/build.sh"
