@@ -57,4 +57,4 @@ cp $ROOT/real.package.json $DIST/package.json
 
 build_package;
 success "Package built in $DIST"
-echo "Done."
+success "All done."
