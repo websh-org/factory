@@ -1,4 +1,6 @@
-import { register, create, test } from "../factory.mjs";
+import { Factory, test } from "../src/factory.mjs";
+
+const { register, create } = Factory();
 
 /**
  * Registering a component type
