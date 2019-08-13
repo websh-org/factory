@@ -20,13 +20,14 @@ announce "Preparing the dist directory in $DIST"
   mkdir $DIST;
 } && ok || abort;
 
-announce "Copy README.md from $ROOT/README.md"
+announce "Copy README.md"
 cp $ROOT/README.md $DIST && ok || abort
 
-announce "Copy LICENSE.md from $ROOT/LICENSE.md"
+announce "Copy LICENSE.md"
 cp $ROOT/LICENSE.md $DIST && ok || abort
-cp $ROOT/real.package.json $DIST/package.json;
-} && ok || abort
+
+announce "Copy real.package.json to dist/package.json"
+cp $ROOT/real.package.json $DIST/package.json && ok || abort
 
 # Build this particular package in the dist directory
 ## Customize as necessary.
