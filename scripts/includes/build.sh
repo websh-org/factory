@@ -6,8 +6,9 @@ DIST=$ROOT/dist
 
 cd $ROOT;
 
-PACKAGE=$(json_get $ROOT/real.package.json name) 
-echo Bulding package $(tput bold)$PACKAGE$(tput sgr0)
+PACKAGE=$(json_get $ROOT/real.package.json name)
+echo
+heading "Bulding package $PACKAGE"
 
 
 

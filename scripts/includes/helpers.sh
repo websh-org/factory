@@ -55,3 +55,9 @@ ensure_git_clean() {
 json_get() {
   node -p "require('${1}').$2"
 }
+
+heading() { 
+  local STR="$*"
+  echo "$(tput bold)${STR}"; echo "${STR//?/=}$(tput sgr0)";
+}
+
