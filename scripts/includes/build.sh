@@ -9,7 +9,7 @@ ensure_git_clean;
 
 success Working directory clean. Building in $DIST
 
-success "$(tput bold)Building in $DIST$(tput sgr0)"
+success "Building in $(tput bold)$DIST$(tput sgr0)"
 ## prepare the dist directory
 rm -rf $DIST
 mkdir $DIST
