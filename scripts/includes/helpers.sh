@@ -31,3 +31,7 @@ is_git_clean() {
 ensure_git_clean() {
   is_git_clean || fatal "You have uncommitted changes.";
 }
+
+json_get() {
+  node -p "require('${1}').$2"
+}

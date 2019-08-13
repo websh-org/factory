@@ -1,4 +1,5 @@
 {
+  "name": "@websh/factory",
   "description": "Object factory with multiple inheritance",
   "scripts": {
     "test" : "node --experimental-modules tests/index.mjs",
@@ -20,5 +21,6 @@
   "bugs": {
     "url": "https://github.com/websh-org/factory/issues"
   },
-  "homepage": "https://websh.org/packages/factory/"
+  "homepage": "https://websh.org/packages/factory/",
+  "private" : true
 }
