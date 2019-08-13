@@ -11,14 +11,16 @@ echo Bulding package $(tput bold)$PACKAGE$(tput sgr0)
 
 ok() {
   echo $(tput setaf 2; tput bold)✔
+  return 0
 }
 
 fail() {
   echo $(tput setaf 1; tput bold) ✘
+  return 0
 }
 
 echo -n '* Is the working directory clean?'
-is_git_clean && ok || fail && fatal Working directory must be clean;
+is_git_clean && ok || fail && fatal "Working directory must be clean";
 
 ## prepare the dist directory
 rm -rf $DIST
