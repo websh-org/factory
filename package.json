@@ -3,7 +3,8 @@
   "scripts": {
     "test" : "node --experimental-modules tests/index.mjs",
     "testmon" : "nodemon --experimental-modules tests/index.mjs",
-    "testweb" : "(cd tests; parcel index.html --open)"
+    "testweb" : "(cd tests; parcel index.html --open)",
+    "build": "sh scripts/build || true"
   },
   "repository": {
     "type": "git",
