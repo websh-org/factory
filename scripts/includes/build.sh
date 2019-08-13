@@ -35,9 +35,6 @@ build_package;
 announce "Copy src/package.json to build/package.json"
 cp $PACKAGE_JSON $BUILD/package.json && ok || abort
 
-announce "Delete file"
-cp $ROOT/LICENSE.md $BUILD && ok || abort
-
 
 success "$PACKAGE built in $BUILD"
 success "$(tput bold)All done.$(tput sgr0)"

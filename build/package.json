@@ -1,6 +1,6 @@
 {
   "name": "@websh/factory",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Object factory with multiple inheritance",
   "main": "factory.mjs",
   "module": "factory.mjs",
