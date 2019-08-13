@@ -27,12 +27,12 @@ abort() {
 
 
 ok() {
-  echo $(tput setaf 2; tput bold) ✔
+  echo $(tput setaf 2; tput bold) ✔ $(tput sgr0)
   return 0
 }
 
 fail() {
-  echo $(tput setaf 1; tput bold) ✘
+  echo $(tput setaf 1; tput bold) ✘ $(tput sgr0)
   return 0
 }
 
