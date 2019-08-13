@@ -6,11 +6,10 @@ DIST=$ROOT/dist
 
 cd $ROOT;
 
-PACKAGE=$(json_get $ROOT/real.package.json name)
+PACKAGE_JSON=$ROOT/dist.package.json
+PACKAGE=$(json_get $PACKAGE_JSON name)
 echo
 heading "Bulding package $PACKAGE"
-
-
 
 announce "Is the working directory clean?"
 is_git_clean && ok || abort "Working directory must be clean.";
@@ -21,14 +20,14 @@ announce "Preparing the dist directory in $DIST"
   mkdir $DIST;
 } && ok || abort;
 
+announce "Copy dist.package.json to dist/package.json"
+cp $PACKAGE_JSON $DIST/package.json && ok || abort
+
 announce "Copy README.md"
 cp $ROOT/README.md $DIST && ok || abort
 
 announce "Copy LICENSE.md"
 cp $ROOT/LICENSE.md $DIST && ok || abort
-
-announce "Copy real.package.json to dist/package.json"
-cp $ROOT/real.package.json $DIST/package.json && ok || abort
 
 # Build this particular package in the dist directory
 ## Customize as necessary.
