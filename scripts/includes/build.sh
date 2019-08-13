@@ -21,7 +21,7 @@ announce "Preparing the dist directory in $DIST"
   cp $ROOT/README.md $DIST;
   cp $ROOT/LICENSE.md $DIST;
   cp $ROOT/real.package.json $DIST/package.json;
-} ok || abort
+} && ok || abort
 
 # Build this particular package in the dist directory
 ## Customize as necessary.
