@@ -175,6 +175,16 @@ export const test = testing.test.bind(testing);
 
 export function compose(outer,inner,ctx=this) {
   if (!inner) return outer;
+  if (!outer) return inner;
   return (...args) => outer.call(ctx,inner.call(ctx,...args));
+}
+
+export function sequence(first,second,ctx) {
+  if (!second) return first;
+  if (!first) return second;
+  return function (...args) {
+    first.call(this,...args);
+    second.call(this,...args)
+  };
 }
 

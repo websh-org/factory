@@ -74,17 +74,17 @@ function Factory() {
   }
 
   function extendWithType(obj, type, ...initArgs) {
-    const typedef = TYPEDEFS[type];
-    assert(typedef, "factory-no-such-type", { type });
-    extendWithTypedef(obj, typedef, ...initArgs);
+    const typeDef = TYPEDEFS[type];
+    assert(typeDef, "factory-no-such-type", { type });
+    extendWithTypedef(obj, typeDef, ...initArgs);
   }
 
 
-  function extendWithTypedef(obj, typedef, ...initArgs) {
+  function extendWithTypedef(obj, typeDef, ...initArgs) {
     const is = IS.get(obj);
 
-    if (typedef.requires) {
-      const required = flatsplit(typedef.requires);
+    if (typeDef.requires) {
+      const required = flatsplit(typeDef.requires);
       for (const req of required) {
         assert(is[req], "factory-required-type-missing", { type: req })
       }
@@ -96,32 +96,32 @@ function Factory() {
     1) extend
     2) install builders
     3) build
-    4) construct (first builders, then typedef)
-    5) init (first builders, then typedef)
+    4) construct (first builders, then typeDef)
+    5) init (first builders, then typeDef)
 
   */
 
-    if (typedef.excludes) {
-      const excludes = flatsplit(typedef.excludes);
+    if (typeDef.excludes) {
+      const excludes = flatsplit(typeDef.excludes);
       for (const type of excludes) assert(!is[type], "factory-excludes-violation", { type });
-      extend(obj, typedef.excludes, ...initArgs);
+      extend(obj, typeDef.excludes, ...initArgs);
     }
 
-    if (typedef.installs) {
-      const installs = flatsplit(typedef.installs);
+    if (typeDef.installs) {
+      const installs = flatsplit(typeDef.installs);
       for (const type of installs) assert(!is[type], "factory-duplicate-type-install", { type });
-      extend(obj, typedef.installs, ...initArgs);
+      extend(obj, typeDef.installs, ...initArgs);
     }
 
 
     // extend
-    if (typedef.extends) extend(obj, typedef.extends, ...initArgs);
+    if (typeDef.extends) extend(obj, typeDef.extends, ...initArgs);
 
     // add buildiers
-    if (typedef.build) {
-      for (const b in typedef.build) {
+    if (typeDef.build) {
+      for (const b in typeDef.build) {
 
-        var def = typedef.build[b];
+        var def = typeDef.build[b];
         if (typeof def === "function") def = { build: def };
 
         let builder = builders[b];
@@ -142,24 +142,24 @@ function Factory() {
 
     const buildable = {};
     for (const b in builders) {
-      if (b in typedef) buildable[b] = typedef[b];
+      if (b in typeDef) buildable[b] = typeDef[b];
     }
 
     for (var b in buildable) {
       const builder = builders[b];
-      for (const build of builder.build) build.call(obj, typedef[b], builder.data);
+      for (const build of builder.build) build.call(obj, typeDef[b], builder.data);
     }
 
-    // call typedef construct
-    if (typedef.construct) typedef.construct.call(obj, ...initArgs);
+    // call typeDef construct
+    if (typeDef.construct) typeDef.construct.call(obj, ...initArgs);
 
     for (var b in buildable) {
       const builder = builders[b];
-      for (const construct of builder.construct) construct.call(obj, typedef[b], builder.data);
+      for (const construct of builder.construct) construct.call(obj, typeDef[b], builder.data);
     }
 
-    // call typedef init
-    if (typedef.init) INITS.get(obj).push(typedef.init.bind(obj));
+    // call typeDef init
+    if (typeDef.init) INITS.get(obj).push(typeDef.init.bind(obj));
   }
 
   return { register, create }

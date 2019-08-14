@@ -1,20 +1,56 @@
-import { uuid, copy, assert, flatsplit, undot, compose } from "./utils.mjs";
+import { uuid, copy, assert, flatsplit, undot, sequence } from "./utils.mjs";
 export { Factory };
 export * from "./utils.mjs";
 
 function Factory() {
+
+  class Builder {
+    
+    constructor(obj, name, def) {
+      this.obj = obj;
+      this.name = name;
+      this.data = {};
+      this._construct = null;
+      this._build = null;
+      this.install(def);
+    }
+    addInit(init) {
+      if (!init) return;
+      BUILDERINITS.get(this.obj).push(
+        (...args) => {
+          init.call(this.obj, this.data, ...args)
+        }
+      );
+    }
+    install(def) {
+      this._build = def.build;
+      this._construct = def.construct;
+      this.addInit(def.init);
+      if (def.install) def.install.call(this.obj, this.data)
+    }
+    override(def) {
+      this._build = sequence(this._build, def.build);
+      this._construct = sequence(this._construct, def.construct);
+      this.addInit(def.init);
+    }
+    construct(def,...initArgs) {
+      this._construct && this._construct.call(this.obj,  def, this.data,...initArgs)
+    }
+    build(def) {
+      this._build && this._build.call(this.obj, def, this.data)
+    }
+  }
+
 
   if (this instanceof Factory) {
     throw "Illegal constructor. Use plain Factory(), not new Factory()";
   }
 
   const BUILDERS = new WeakMap();
-  const BUILD = new WeakMap();
   const IS = new WeakMap();
   const TYPEDEFS = {};
   const INITS = new WeakMap();
-  const CONSTRUCTS = new WeakMap();
-  const SETUPS = new WeakMap();
+  const BUILDERINITS = new WeakMap();
 
   const BUILTIN = {
     build: {
@@ -43,7 +79,7 @@ function Factory() {
     const obj = {};
     IS.set(obj, {});
     INITS.set(obj, []);
-    BUILD.set(obj, {});
+    BUILDERINITS.set(obj, []);
     BUILDERS.set(obj, {});
     Object.assign(obj, {
       id: uuid(),
@@ -52,10 +88,8 @@ function Factory() {
 
     extendWithTypedef(obj, BUILTIN, ...initArgs);
     extend(obj, typeList, ...initArgs);
-    const builders = BUILDERS.get(obj);
-    for (const b in builders) {
-      const builder = builders[b];
-      for (const init of builder.init) init.call(obj, builder.data, ...initArgs);
+    for (const init of BUILDERINITS.get(obj)) {
+      init.call(obj, ...initArgs);
     }
     for (const init of INITS.get(obj)) {
       init.call(obj, ...initArgs);
@@ -74,93 +108,64 @@ function Factory() {
   }
 
   function extendWithType(obj, type, ...initArgs) {
-    const typedef = TYPEDEFS[type];
-    assert(typedef, "factory-no-such-type", { type });
-    extendWithTypedef(obj, typedef, ...initArgs);
+    const typeDef = TYPEDEFS[type];
+    assert(typeDef, "factory-no-such-type", { type });
+    extendWithTypedef(obj, typeDef, ...initArgs);
   }
 
 
-  function extendWithTypedef(obj, typedef, ...initArgs) {
+  function extendWithTypedef(obj, typeDef, ...initArgs) {
     const is = IS.get(obj);
 
-    if (typedef.requires) {
-      const required = flatsplit(typedef.requires);
+    if (typeDef.requires) {
+      const required = flatsplit(typeDef.requires);
+      assert(required.every(req=>is[req]))
       for (const req of required) {
         assert(is[req], "factory-required-type-missing", { type: req })
       }
     }
-    const builders = BUILDERS.get(obj);
 
-    /*
-    The build order is:
-    1) extend
-    2) install builders
-    3) build
-    4) construct (first builders, then typedef)
-    5) init (first builders, then typedef)
-
-  */
-
-    if (typedef.excludes) {
-      const excludes = flatsplit(typedef.excludes);
-      for (const type of excludes) assert(!is[type], "factory-excludes-violation", { type });
-      extend(obj, typedef.excludes, ...initArgs);
-    }
-
-    if (typedef.installs) {
-      const installs = flatsplit(typedef.installs);
-      for (const type of installs) assert(!is[type], "factory-duplicate-type-install", { type });
-      extend(obj, typedef.installs, ...initArgs);
-    }
-
-
-    // extend
-    if (typedef.extends) extend(obj, typedef.extends, ...initArgs);
-
-    // add buildiers
-    if (typedef.build) {
-      for (const b in typedef.build) {
-
-        var def = typedef.build[b];
-        if (typeof def === "function") def = { build: def };
-
-        let builder = builders[b];
-        if (!builder) {
-          builder = builders[b] = {
-            data: {},
-            build: [],
-            construct: [],
-            init: [],
-          }
-          if (def.install) def.install.call(obj, builder.data);
-        }
-        if (def.build) builder.build.push(def.build);
-        if (def.construct) builder.construct.push(def.build);
-        if (def.init) builder.init.push(def.init);
+    if (typeDef.excludes) {
+      const excludes = flatsplit(typeDef.excludes);
+      for (const type of excludes) {
+        assert(!is[type], "factory-excludes-violation", { type });
       }
     }
 
-    const buildable = {};
+    if (typeDef.installs) {
+      const installs = flatsplit(typeDef.installs);
+      for (const type of installs) {
+        assert(!is[type], "factory-duplicate-type-install", { type });
+      }
+      extend(obj, typeDef.installs, ...initArgs);
+    }
+
+    // extend
+    if (typeDef.extends) extend(obj, typeDef.extends, ...initArgs);
+
+    const builders = BUILDERS.get(obj);
+    // add buildiers
+    if (typeDef.build) {
+      for (const b in typeDef.build) {
+        var def = typeDef.build[b];
+        if (typeof def === "function") def = { build: def };
+
+        if (!builders[b]) builders[b] = new Builder(obj,b,def);
+        else builders[b].override(def);
+      }
+    }
     for (const b in builders) {
-      if (b in typedef) buildable[b] = typedef[b];
+      if (b in typeDef) builders[b].build(typeDef[b]);
+    }
+    if (typeDef.construct) typeDef.construct.call(obj, ...initArgs);
+    for (const b in builders) {
+      if (b in typeDef) builders[b].construct(typeDef[b]);
     }
 
-    for (var b in buildable) {
-      const builder = builders[b];
-      for (const build of builder.build) build.call(obj, typedef[b], builder.data);
-    }
-
-    // call typedef construct
-    if (typedef.construct) typedef.construct.call(obj, ...initArgs);
-
-    for (var b in buildable) {
-      const builder = builders[b];
-      for (const construct of builder.construct) construct.call(obj, typedef[b], builder.data);
-    }
-
-    // call typedef init
-    if (typedef.init) INITS.get(obj).push(typedef.init.bind(obj));
+  // call typeDef init
+    if (typeDef.init) INITS.get(obj).push(typeDef.init.bind(obj));
   }
 
   return { register, create }
-} 
+
+}
